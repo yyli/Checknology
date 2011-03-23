@@ -50,3 +50,5 @@ vga_y2          .data       479
 vga_dump        .data       0
 vga_color_in    .data       101
 vga_check       .data       100
+vga_max_x       .data       639
+vga_max_y       .data       479
