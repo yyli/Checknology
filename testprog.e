@@ -9,7 +9,7 @@
                         cp          height              bg_h                                        //sets a temp height ...
                         sub         width-              width           one                         //subtract one from width store in width-
                         sub         height-             height          one                         //...               height ...     height-
-bg_draw_loop cp         vga_x1      w_i                                                             //copy w_i (width incrementor) into x1
+bg_draw_loop            cp         vga_x1      w_i                                                  //copy w_i (width incrementor) into x1
                         cp          vga_y1              h_i                                         //copy h_i (height incrementor) into y1
                         mult        i                   width           h_i                         //mult h_i with i (array incrementor)
                         add         i                   i               w_i                         //add w_i to i
