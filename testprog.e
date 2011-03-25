@@ -9,11 +9,13 @@
                         cp          height              bg_h                                        //sets a temp height ...
                         sub         width-              width           one                         //subtract one from width store in width-
                         sub         height-             height          one                         //...               height ...     height-
-bg_draw_loop            cp         vga_x1      w_i                                                  //copy w_i (width incrementor) into x1
+bg_draw_loop            cp          vga_x1              w_i                                         //copy w_i (width incrementor) into x1
                         cp          vga_y1              h_i                                         //copy h_i (height incrementor) into y1
                         mult        i                   width           h_i                         //mult h_i with i (array incrementor)
                         add         i                   i               w_i                         //add w_i to i
-                        cpfa        vga_color_out       img             i                           //copy the color from array
+                        call        SDcard_check1       SDcard_ptr
+                        cp          vga_color_out       SDcard_data
+//                        cpfa        vga_color_out       img             i                           //copy the color from array
                         call        vga_write_one       vga_return                                  //call write one pixel
                         be          bg_draw_setzero     w_i             width-                      //if width is maxwidth-1 then set_cur_for_write it to zero
                         add         w_i                 w_i             one                         //add one to w_i
@@ -43,6 +45,7 @@ init_grab_in_loop       add         pos_w_i             w_i             x       
 main_loop               call        mouse_loop          mouse_holder
                         cp          deltax              mouse_deltax
                         cp          deltay              mouse_deltay   
+                        cp          click               mouse_left
 //repaint old pos
                         cp          width               cur_l                                       //sets a temp width variable with the width of the bg that we want to paint
                         cp          height              cur_l                                       //sets a temp height ...
@@ -70,8 +73,15 @@ grab_loop               add         x                   x               deltax
 chk_x                   blt         xlow                x               zero
                         blt         xhigh               vga_max_x       x
 chk_y                   blt         ylow                y               zero
-                        blt         yhigh               vga_max_y       y      
-chk_e                   cp          width               cur_l                                       //change temp width to cursor length
+                        blt         yhigh               vga_max_y       y
+//check select
+chk_e                   bne         next                click           one
+                        blt         cp_first            selected        one
+                        blt         cp_second           selected        two
+                        blt         cp_reset            two             selected
+start_redraw            call        redraw              retvar
+//end check select
+next                    cp          width               cur_l                                       //change temp width to cursor length
                         cp          height              cur_l                                       //...         height ...
                         sub         width-              width           one                         //width-1
                         sub         height-             height          one                         //height-1
@@ -97,10 +107,10 @@ set_cur_for_write       call        draw_cur_bound      retvar
                         cp          vga_x2              x2
                         cp          vga_y1              y1
                         cp          vga_y2              y2
-                        cp          vga_color_out       black
+                        cp          vga_color_out       cur_color
                         call        vga_write_blk       vga_return
                         call        main_loop           dump
-//end paint mouse        
+//end paint mouse       
                         halt
 xlow                    cp          x                   0
                         call        chk_y               dump
@@ -135,9 +145,172 @@ repaint_setzero         cp          w_i                 zero
                         be          grab_loop           h_i             height-
                         add         h_i                 h_i             one
                         call        repaint_loop        dump
-       
-bg_w                    .data       448
-bg_h                    .data       30
+
+//draw selection
+redraw                  blt         end_selection       board_w         select_x
+                        blt         end_selection       board_h         select_y
+//case 1
+                        call        start_check_x       retvar1
+                        sub         dump                location_x      one
+                        mult        dump                dump            width_square
+                        cp          vga_x1              dump
+                        mult        dump                location_x      width_square
+                        cp          vga_x2              dump
+                        sub         dump                location_y      one
+                        mult        dump                dump            width_square
+                        cp          vga_y1              dump
+                        add         dump                dump            three
+                        cp          vga_y2              dump
+                        cp          vga_color_out       select_color
+                        call        vga_write_blk       vga_return
+//case 2
+                        sub         dump                location_x      one
+                        mult        dump                dump            width_square
+                        cp          vga_x1              dump
+                        mult        dump                location_x      width_square
+                        cp          vga_x2              dump
+                        mult        dump                location_y      width_square
+                        sub         dump                dump            three
+                        cp          vga_y1              dump
+                        mult        dump                location_y      width_square
+                        cp          vga_y2              dump
+                        cp          vga_color_out       select_color
+                        call        vga_write_blk       vga_return
+//case 3
+                        sub         dump                location_x      one
+                        mult        dump                dump            width_square
+                        cp          vga_x1              dump
+                        add         dump                dump            three
+                        cp          vga_x2              dump
+                        sub         dump                location_y      one
+                        mult        dump                dump            width_square
+                        cp          vga_y1              dump
+                        mult        dump                location_y      width_square
+                        cp          vga_y2              dump
+                        cp          vga_color_out       select_color
+                        call        vga_write_blk       vga_return
+//case 4
+                        mult        dump                location_x      width_square
+                        cp          vga_x2              dump
+                        sub         dump                dump            three
+                        cp          vga_x1              dump
+                        sub         dump                location_y      one
+                        mult        dump                dump            width_square
+                        cp          vga_y1              dump
+                        mult        dump                location_y      width_square
+                        cp          vga_y2              dump
+                        cp          vga_color_out       select_color
+                        call        vga_write_blk       vga_return
+                        add         selected            selected        one
+end_selection           ret         retvar
+//end draw selection
+
+//check location *write as one function
+start_check_x           mult        dump                width_square    four
+                        blt         board_four          select_x               dump
+                        mult        dump                width_square    six
+                        blt         board_six           select_x               dump
+                        mult        dump                width_square    seven
+                        blt         board_seven         select_x               dump
+                        cp          location_x          eight         
+check_location_endx     be          start_check_y       zero            zero
+board_four              mult        dump                width_square    two
+                        blt         board_two           select_x               dump
+                        mult        dump                width_square    three
+                        blt         board_three         select_x               dump
+                        cp          location_x          four
+                        be          check_location_endx zero            zero
+board_six               mult        dump                width_square    five
+                        blt         board_five          select_x               dump
+                        cp          location_x          six
+                        be          check_location_endx zero            zero
+board_seven             cp          location_x          seven
+                        be          check_location_endx zero            zero
+board_two               blt         board_one           select_x               width_square
+                        cp          location_x          two
+                        be          check_location_endx zero            zero
+board_three             cp          location_x          three
+                        be          check_location_endx zero            zero
+board_one               cp          location_x          one
+                        be          check_location_endx zero            zero
+board_five              cp          location_x          five
+                        be          check_location_endx zero            zero
+start_check_y           mult        dump                width_square    four
+                        blt         board_four_y        select_y               dump
+                        mult        dump                width_square    six
+                        blt         board_six_y         select_y               dump
+                        mult        dump                width_square    seven
+                        blt         board_seven_y       select_y               dump
+                        cp          location_y          eight         
+check_location_endy     ret         retvar1
+board_four_y            mult        dump                width_square    two
+                        blt         board_two_y         select_y               dump
+                        mult        dump                width_square    three
+                        blt         board_three_y       select_y               dump
+                        cp          location_y          four
+                        be          check_location_endy zero            zero
+board_six_y             mult        dump                width_square    five
+                        blt         board_five_y        select_y               dump
+                        cp          location_y          six
+                        be          check_location_endy zero            zero
+board_seven_y           cp          location_y          seven
+                        be          check_location_endy zero            zero
+board_two_y             blt         board_one_y         select_y               width_square
+                        cp          location_y          two
+                        be          check_location_endy zero            zero
+board_three_y           cp          location_y          three
+                        be          check_location_endy zero            zero
+board_one_y             cp          location_y          one
+                        be          check_location_endy zero            zero
+board_five_y            cp          location_y          five
+                        be          check_location_endy zero            zero
+//end check location
+
+//only two can be selected
+cp_first                cp          select_x1           x
+                        cp          select_y1           y
+                        cp          select_x            x
+                        cp          select_y            y
+                        cp          select_color        cur_color  
+                        be          start_redraw        zero            zero                      
+cp_second               cp          select_x2           x
+                        cp          select_y2           y
+                        cp          select_x            x
+                        cp          select_y            y
+                        cp          select_color        cur_color
+                        be          start_redraw        zero            zero         
+cp_reset                cp          select_x            select_x1
+                        cp          select_y            select_y1
+                        cp          select_color        three
+                        call        redraw              retvar                      
+                        cp          select_x            select_x2
+                        cp          select_y            select_y2
+                        cp          select_color        three
+                        cp          selected            negone
+                        be          start_redraw        zero            zero
+//end selected
+
+negone                  .data       -1
+retvar2                 .data       0
+select_x                .data       0
+select_y                .data       0
+select_x1               .data       0
+select_y1               .data       0
+select_x2               .data       0
+select_y2               .data       0
+select_color            .data       0
+selected                .data       0
+retvar1                 .data       0
+location_x              .data       0
+location_y              .data       0
+width_square            .data       40
+width_square2           .data       0
+green                   .data       28
+ten                     .data       5 
+board_w                 .data       320
+board_h                 .data       320
+bg_w                    .data       640
+bg_h                    .data       480
 old                     .data       0
                         .data       0
                         .data       0
@@ -168,11 +341,17 @@ side_2                  .data       1
 cur_l                   .data       5
 dump                    .data       0
 white                   .data       255
+cur_color               .data       252
 black                   .data       0
 zero                    .data       0
 one                     .data       1
 two                     .data       2
+three                   .data       3
 four                    .data       4
+five                    .data       5
+six                     .data       6
+seven                   .data       7
+eight                   .data       8
 deltax                  .data       0
 deltay                  .data       0
 x                       .data       0
@@ -193,4 +372,7 @@ pos_w_i                 .data       0
 
 #include vga.e
 #include mouse.e
-#include image.e
+//#include image.e
+#include sd.e
+
+click                   .data       0
