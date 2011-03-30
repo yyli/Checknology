@@ -78,6 +78,7 @@ chk_y                   blt         ylow                y               zero
 chk_e                   bne         next                click           one
                         blt         cp_first            selected        one
                         blt         cp_second           selected        two
+                        be          cp_reset            two             selected
                         blt         cp_reset            two             selected
 start_redraw            call        redraw              retvar
 //end check select
@@ -149,8 +150,13 @@ repaint_setzero         cp          w_i                 zero
 //draw selection
 redraw                  blt         end_selection       board_w         select_x
                         blt         end_selection       board_h         select_y
-//case 1
+//check which square it is in
                         call        start_check_x       retvar1
+                        cp          chkvalidsq_p        location_x
+                        cp          chkvalidsq_q        location_y
+                        call        chkvalidsq          chkvalidsq_retvar
+                        bne         end_selection       chkvalidsq_end      one
+//case 1
                         sub         dump                location_x      one
                         mult        dump                dump            width_square
                         cp          vga_x1              dump
@@ -372,7 +378,7 @@ pos_w_i                 .data       0
 
 #include vga.e
 #include mouse.e
-//#include image.e
+#include chkvalidsq.e
 #include sd.e
 
 click                   .data       0
