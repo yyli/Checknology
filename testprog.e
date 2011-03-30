@@ -15,7 +15,6 @@ bg_draw_loop            cp          vga_x1              w_i                     
                         add         i                   i               w_i                         //add w_i to i
                         call        SDcard_check1       SDcard_ptr
                         cp          vga_color_out       SDcard_data
-//                        cpfa        vga_color_out       img             i                           //copy the color from array
                         call        vga_write_one       vga_return                                  //call write one pixel
                         be          bg_draw_setzero     w_i             width-                      //if width is maxwidth-1 then set_cur_for_write it to zero
                         add         w_i                 w_i             one                         //add one to w_i
@@ -45,7 +44,8 @@ init_grab_in_loop       add         pos_w_i             w_i             x       
 main_loop               call        mouse_loop          mouse_holder
                         cp          deltax              mouse_deltax
                         cp          deltay              mouse_deltay   
-                        cp          click               mouse_left
+                        cp          lclick              mouse_left
+                        cp          rclick              mouse_right
 //repaint old pos
                         cp          width               cur_l                                       //sets a temp width variable with the width of the bg that we want to paint
                         cp          height              cur_l                                       //sets a temp height ...
@@ -74,8 +74,9 @@ chk_x                   blt         xlow                x               zero
                         blt         xhigh               vga_max_x       x
 chk_y                   blt         ylow                y               zero
                         blt         yhigh               vga_max_y       y
-//check select
-chk_e                   bne         next                click           one
+//check mouse clicks for selection and reset
+chk_e                   be          cp_reset            rclick          one
+lol                     bne         next                lclick          one
                         blt         cp_first            selected        one
                         blt         cp_second           selected        two
                         be          cp_reset            two             selected
@@ -211,7 +212,7 @@ redraw                  blt         end_selection       board_w         select_x
 end_selection           ret         retvar
 //end draw selection
 
-//check location *write as one function
+//check location TODO: write as one function
 start_check_x           mult        dump                width_square    four
                         blt         board_four          select_x               dump
                         mult        dump                width_square    six
@@ -285,15 +286,18 @@ cp_second               cp          select_x2           x
                         cp          select_y            y
                         cp          select_color        cur_color
                         be          start_redraw        zero            zero         
-cp_reset                cp          select_x            select_x1
-                        cp          select_y            select_y1
-                        cp          select_color        three
-                        call        redraw              retvar                      
+cp_reset                blt         next                selected        one
+                        blt         cp_reset2           selected        two
+                        cp          selected            negone
                         cp          select_x            select_x2
                         cp          select_y            select_y2
                         cp          select_color        three
-                        cp          selected            negone
-                        be          start_redraw        zero            zero
+                        call        redraw              retvar                      
+cp_reset2               cp          selected            negone
+                        cp          select_x            select_x1
+                        cp          select_y            select_y1
+                        cp          select_color        three
+                        be          start_redraw        zero            zero                   
 //end selected
 
 negone                  .data       -1
@@ -305,7 +309,6 @@ select_y1               .data       0
 select_x2               .data       0
 select_y2               .data       0
 select_color            .data       0
-selected                .data       0
 retvar1                 .data       0
 location_x              .data       0
 location_y              .data       0
@@ -375,10 +378,13 @@ h_i                     .data       0
 w_i                     .data       0
 pos_h_i                 .data       0
 pos_w_i                 .data       0
+lclick                  .data       0
+rclick                  .data       0
 
 #include vga.e
 #include mouse.e
 #include chkvalidsq.e
 #include sd.e
 
-click                   .data       0
+blah                    .data       255
+selected                .data       0
