@@ -20,6 +20,27 @@ bg_draw_loop            cp          vga_x1              w_i                     
                         add         w_i                 w_i             one                         //add one to w_i
                         call        bg_draw_loop        dump                                        //repaint_loop bg_draw_loop
 //end draw background
+
+//draw initial original board
+draw_init_piece_i       cp          i                   zero                                        //resets i         
+draw_init_piece         cpfa        location_x          board_pos_x     i
+                        cpfa        location_y          board_pos_y     i
+                        cpfa        piece               board_orig      i
+                        cpta        piece               board           i
+                        sub         dump                location_x      one
+                        mult        vga_x1              dump            width_square
+                        mult        vga_x2              location_x      width_square
+                        sub         dump                location_y      one
+                        mult        vga_y1              dump            width_square
+                        mult        vga_y2              location_y      width_square
+                        be          init_king_red       piece           negtwo
+                        be          init_red            piece           negone
+                        be          init_king_blk       piece           two
+                        be          init_blk            piece           one
+draw_init_inc           add         i                   i               one
+                        blt         draw_init_piece     i               thirtytwo
+//end draw initial original board
+
 //start save xold
 init_grab_loop          cp          width               cur_l                                       //change temp width to cursor length
                         cp          height              cur_l                                       //...         height ...
@@ -41,12 +62,15 @@ init_grab_in_loop       add         pos_w_i             w_i             x       
                         add         w_i                 w_i             one                         //add one
                         call        init_grab_in_loop   dump  
 //end save xold
+
+//////start looping here
+
 main_loop               call        mouse_loop          mouse_holder
                         cp          deltax              mouse_deltax
                         cp          deltay              mouse_deltay   
                         cp          lclick              mouse_left
                         cp          rclick              mouse_right
-//repaint old pos
+//start repaint old pos
                         cp          width               cur_l                                       //sets a temp width variable with the width of the bg that we want to paint
                         cp          height              cur_l                                       //sets a temp height ...
                         sub         width-              width           one                         //subtract one from width store in width-
@@ -67,6 +91,7 @@ repaint_loop            add         pos_w_i             x               w_i     
                         add         w_i                 w_i             one                         //add one
                         call        repaint_loop        dump
 //end repaint old pos
+
 //start save new
 grab_loop               add         x                   x               deltax
                         add         y                   y               deltay
@@ -111,14 +136,16 @@ set_cur_for_write       call        draw_cur_bound      retvar
                         cp          vga_y2              y2
                         cp          vga_color_out       cur_color
                         call        vga_write_blk       vga_return
+//end paint mouse
                         call        main_loop           dump
-//end paint mouse       
+
+//////end main loop
                         halt
-xlow                    cp          x                   0
+xlow                    cp          x                   zero
                         call        chk_y               dump
 xhigh                   cp          x                   vga_max_x
                         call        chk_y               dump
-ylow                    cp          y                   0
+ylow                    cp          y                   zero
                         call        chk_e               dump
 yhigh                   cp          y                   vga_max_y
                         call        chk_e               dump
@@ -129,7 +156,7 @@ draw_cur_bound          sub         x1                  x               side_2
                         ret         retvar      
 //sets w_i to zero or end bg_draw_loop        
 bg_draw_setzero         cp          w_i                 zero
-                        be          init_grab_loop      h_i             height-
+                        be          draw_init_piece_i   h_i             height-
                         add         h_i                 h_i             one
                         call        bg_draw_loop        dump
 //sets w_i to zero or end grab_inner_loop        
@@ -212,7 +239,7 @@ redraw                  blt         end_selection       board_w         select_x
 end_selection           ret         retvar
 //end draw selection
 
-//check location TODO: write as one function
+//check location
 start_check_x           mult        dump                width_square    four
                         blt         board_four          select_x               dump
                         mult        dump                width_square    six
@@ -300,6 +327,28 @@ cp_reset2               cp          selected            negone
                         be          start_redraw        zero            zero                   
 //end selected
 
+//choose which piece to draw
+init_red                cp          vga_color_out       white
+                        call        vga_write_blk       vga_return
+                        be          draw_init_inc       zero            zero
+
+init_king_red           cp          vga_color_out       white
+                        call        vga_write_blk       vga_return
+                        be          draw_init_inc       zero            zero
+
+init_blk                cp          vga_color_out       zero
+                        call        vga_write_blk       vga_return
+                        be          draw_init_inc       zero            zero
+
+init_king_blk           cp          vga_color_out       zero
+                        call        vga_write_blk       vga_return
+                        be          draw_init_inc       zero            zero
+                            
+//end choose which piece to draw
+
+piece                   .data       0
+selected                .data       0
+negtwo                  .data       -2
 negone                  .data       -1
 retvar2                 .data       0
 select_x                .data       0
@@ -361,6 +410,7 @@ five                    .data       5
 six                     .data       6
 seven                   .data       7
 eight                   .data       8
+thirtytwo               .data       32
 deltax                  .data       0
 deltay                  .data       0
 x                       .data       0
@@ -380,11 +430,136 @@ pos_h_i                 .data       0
 pos_w_i                 .data       0
 lclick                  .data       0
 rclick                  .data       0
+board_orig              .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+board_pos_x             .data       2
+                        .data       4
+                        .data       6
+                        .data       8
+                        .data       1
+                        .data       3
+                        .data       5
+                        .data       7
+                        .data       2
+                        .data       4
+                        .data       6
+                        .data       8
+                        .data       1
+                        .data       3
+                        .data       5
+                        .data       7
+                        .data       2
+                        .data       4
+                        .data       6
+                        .data       8
+                        .data       1
+                        .data       3
+                        .data       5
+                        .data       7
+                        .data       2
+                        .data       4
+                        .data       6
+                        .data       8
+                        .data       1
+                        .data       3
+                        .data       5
+                        .data       7
+board_pos_y             .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       2
+                        .data       2
+                        .data       2
+                        .data       2
+                        .data       3
+                        .data       3
+                        .data       3
+                        .data       3
+                        .data       4
+                        .data       4
+                        .data       4
+                        .data       4
+                        .data       5
+                        .data       5
+                        .data       5
+                        .data       5
+                        .data       6
+                        .data       6
+                        .data       6
+                        .data       6
+                        .data       7
+                        .data       7
+                        .data       7
+                        .data       7
+                        .data       8
+                        .data       8
+                        .data       8
+                        .data       8
+board                   .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
 
 #include vga.e
 #include mouse.e
 #include chkvalidsq.e
 #include sd.e
-
-blah                    .data       255
-selected                .data       0
