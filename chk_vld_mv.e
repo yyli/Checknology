@@ -10,36 +10,43 @@ chk_vld_mv_end              and             chk_vld_mv_vld              chk_vld_
 chk_vld_mv_k                sub             chk_vld_mv_xdiff            chk_vld_mv_x1           chk_vld_mv_x2
                             mult            chk_vld_mv_xdiff            chk_vld_mv_xdiff        chk_vld_mv_xdiff
                             sub             chk_vld_mv_ydiff            chk_vld_mv_y1           chk_vld_mv_y2
-                            mult            chk_vld_mv_ydiff            chk_vld_mv_ydiff        chk_vld_mv_ydiff
-                            blt             chk_vld_mv_kxvld            chk_vld_mv_xdiff        chk_vld_mv_five
-chk_vld_mv_ky               blt             chk_vld_mv_kyvld            chk_vld_mv_ydiff        chk_vld_mv_five
+                            mult            chk_vld_mv_ydiff            chk_vld_mv_ydiff        chk_vld_mv_ydiff    
+                            //checks
+                            blt             chk_vld_mv_end              chk_vld_mv_four         chk_vld_mv_xdiff        
+                            be              chk_vld_mv_end              chk_vld_mv_xdiff        zero
+                            cp              chk_vld_mv_xvldv            chk_vld_mv_one
+                            be              chk_vld_mv_end              chk_vld_mv_ydiff        zero
+                            blt             chk_vld_mv_end              chk_vld_mv_four         chk_vld_mv_ydiff     
+                            cp              chk_vld_mv_yvldv            chk_vld_mv_one      
+                            //end check
                             be              chk_vld_mv_end              zero                    zero
 chk_vld_mv_r                sub             chk_vld_mv_xdiff            chk_vld_mv_x1           chk_vld_mv_x2
                             mult            chk_vld_mv_xdiff            chk_vld_mv_xdiff        chk_vld_mv_xdiff
                             sub             chk_vld_mv_ydiff            chk_vld_mv_y1           chk_vld_mv_y2
                             mult            chk_vld_mv_ydiff            chk_vld_mv_ydiff        chk_vld_mv_ydiff
-                            blt             chk_vld_mv_rxvld            chk_vld_mv_xdiff        chk_vld_mv_five
-chk_vld_mv_ry               blt             chk_vld_mv_ryvld            chk_vld_mv_y1           chk_vld_mv_y2
+                            //checks
+                            blt             chk_vld_mv_end              chk_vld_mv_four         chk_vld_mv_xdiff        
+                            be              chk_vld_mv_end              chk_vld_mv_xdiff        zero
+                            cp              chk_vld_mv_xvldv            chk_vld_mv_one
+                            be              chk_vld_mv_end              chk_vld_mv_ydiff        zero
+                            blt             chk_vld_mv_end              chk_vld_mv_four         chk_vld_mv_ydiff
+                            blt             chk_vld_mv_end              chk_vld_mv_y2           chk_vld_mv_y1     
+                            cp              chk_vld_mv_yvldv            chk_vld_mv_one      
+                            //end check
                             be              chk_vld_mv_end              zero                    zero
 chk_vld_mv_b                sub             chk_vld_mv_xdiff            chk_vld_mv_x1           chk_vld_mv_x2
                             mult            chk_vld_mv_xdiff            chk_vld_mv_xdiff        chk_vld_mv_xdiff
                             sub             chk_vld_mv_ydiff            chk_vld_mv_y1           chk_vld_mv_y2
                             mult            chk_vld_mv_ydiff            chk_vld_mv_ydiff        chk_vld_mv_ydiff
-                            blt             chk_vld_mv_bxvld            chk_vld_mv_xdiff        chk_vld_mv_five
-chk_vld_mv_by               blt             chk_vld_mv_byvld            chk_vld_mv_y2           chk_vld_mv_y1
-                            be              chk_vld_mv_end              zero                    zero                            
-chk_vld_mv_bxvld            cp              chk_vld_mv_xvldv            chk_vld_mv_one        
-                            be              chk_vld_mv_by               zero                    zero
-chk_vld_mv_byvld            cp              chk_vld_mv_yvldv            chk_vld_mv_one
-                            be              chk_vld_mv_end              zero                    zero
-chk_vld_mv_rxvld            cp              chk_vld_mv_xvldv            chk_vld_mv_one        
-                            be              chk_vld_mv_ry               zero                    zero
-chk_vld_mv_ryvld            blt             chk_vld_mv_end              chk_vld_mv_four         chk_vld_mv_ydiff
-                            cp              chk_vld_mv_yvldv            chk_vld_mv_one
-                            be              chk_vld_mv_end              zero                    zero
-chk_vld_mv_kxvld            cp              chk_vld_mv_xvldv            chk_vld_mv_one        
-                            be              chk_vld_mv_ky               zero                    zero
-chk_vld_mv_kyvld            cp              chk_vld_mv_yvldv            chk_vld_mv_one
+                            //checks
+                            blt             chk_vld_mv_end              chk_vld_mv_four         chk_vld_mv_xdiff        
+                            be              chk_vld_mv_end              chk_vld_mv_xdiff        zero
+                            cp              chk_vld_mv_xvldv            chk_vld_mv_one
+                            be              chk_vld_mv_end              chk_vld_mv_ydiff        zero
+                            blt             chk_vld_mv_end              chk_vld_mv_four         chk_vld_mv_ydiff
+                            blt             chk_vld_mv_end              chk_vld_mv_y1           chk_vld_mv_y2     
+                            cp              chk_vld_mv_yvldv            chk_vld_mv_one      
+                            //end check
                             be              chk_vld_mv_end              zero                    zero
 
 chk_vld_mv_zero             .data           0
