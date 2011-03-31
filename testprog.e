@@ -330,6 +330,8 @@ cp_comp_move            cp          select_x            select_x1
                         call        start_check_x       retvar1
                         cp          calc_pos_x          location_x
                         cp          calc_pos_y          location_y
+                        cp          chk_vld_mv_x1       location_x
+                        cp          chk_vld_mv_y1       location_y
                         call        calc_pos            calc_pos_retvar 
                         cp          tpiece_pos1         calc_pos_end
                         cp          select_x            select_x2
@@ -337,12 +339,18 @@ cp_comp_move            cp          select_x            select_x1
                         call        start_check_x       retvar1
                         cp          calc_pos_x          location_x
                         cp          calc_pos_y          location_y
+                        cp          chk_vld_mv_x2       location_x
+                        cp          chk_vld_mv_y2       location_y
                         call        calc_pos            calc_pos_retvar 
-                        cp          tpiece_pos2         calc_pos_end
+                        cp          tpiece_pos2         calc_pos_end     
                         cpfa        tpiece              board           tpiece_pos1
+                        cp          chk_vld_mv_piece    tpiece
+                        call        chk_vld_mv          chk_vld_mv_retvar
+                        cp          test                chk_vld_mv_vld
+                        bne         pre_draw_piece      chk_vld_mv_vld  one
                         cpta        zero                board           tpiece_pos1
                         cpta        tpiece              board           tpiece_pos2
-                        cp          i                   zero                                        //resets i         
+pre_draw_piece          cp          i                   zero                                        //resets i         
 draw_piece              cpfa        location_x          board_pos_x     i
                         cpfa        location_y          board_pos_y     i
                         cpfa        piece               board           i
@@ -589,11 +597,9 @@ board_pos_y             .data       1
 #include chkvalidsq.e
 #include sd.e
 #include calc_pos.e
+#include chk_vld_mv.e
 
-sdfasdf                 .data       255
 piece                   .data       0
-tpiece_pos1             .data       0
-tpiece_pos2             .data       0
 board                   .data       0
                         .data       0
                         .data       0
@@ -626,4 +632,9 @@ board                   .data       0
                         .data       0
                         .data       0
                         .data       0
-tpiece                   .data       0
+tpiece_pos1             .data       0
+tpiece_pos2             .data       0
+tpiece                  .data       0
+asdfasdfasdf            .data       255
+test                    .data       0
+asdkjfhanuifehflakjsf   .data       255
