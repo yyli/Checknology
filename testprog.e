@@ -563,3 +563,4 @@ board                   .data       0
 #include mouse.e
 #include chkvalidsq.e
 #include sd.e
+#include calc_pos.e
