@@ -104,8 +104,8 @@ chk_e                   be          cp_reset            rclick          one
 lol                     bne         next                lclick          one
                         blt         cp_first            selected        one
                         blt         cp_second           selected        two
-                        be          cp_reset            two             selected
-                        blt         cp_reset            two             selected
+                        be          cp_comp_move        two             selected
+                        blt         cp_comp_move        two             selected
 start_redraw            call        redraw              retvar
 //end check select
 next                    cp          width               cur_l                                       //change temp width to cursor length
@@ -324,10 +324,46 @@ cp_reset2               cp          selected            negone
                         cp          select_x            select_x1
                         cp          select_y            select_y1
                         cp          select_color        three
-                        be          start_redraw        zero            zero                   
+                        be          start_redraw        zero            zero   
+cp_comp_move            cp          select_x            select_x1
+                        cp          select_y            select_y1
+                        call        start_check_x       retvar1
+                        cp          calc_pos_x          location_x
+                        cp          calc_pos_y          location_y
+                        call        calc_pos            calc_pos_retvar 
+                        cp          tpiece_pos1         calc_pos_end
+                        cp          select_x            select_x2
+                        cp          select_y            select_y2
+                        call        start_check_x       retvar1
+                        cp          calc_pos_x          location_x
+                        cp          calc_pos_y          location_y
+                        call        calc_pos            calc_pos_retvar 
+                        cp          tpiece_pos2         calc_pos_end
+                        cpfa        tpiece              board           tpiece_pos1
+                        cpta        zero                board           tpiece_pos1
+                        cpta        tpiece              board           tpiece_pos2
+                        cp          i                   zero                                        //resets i         
+draw_piece              cpfa        location_x          board_pos_x     i
+                        cpfa        location_y          board_pos_y     i
+                        cpfa        piece               board           i
+                        sub         dump                location_x      one
+                        mult        vga_x1              dump            width_square
+                        mult        vga_x2              location_x      width_square
+                        sub         dump                location_y      one
+                        mult        vga_y1              dump            width_square
+                        mult        vga_y2              location_y      width_square
+                        be          init_king_red_p     piece           negtwo
+                        be          init_red_p          piece           negone
+                        be          init_king_blk_p     piece           two
+                        be          init_blk_p          piece           one
+                        be          init_blank_p        piece           zero
+draw_piece_inc          add         i                   i               one
+                        blt         draw_piece          i               thirtytwo
+                        cp          selected            zero
+                        be          next                zero            zero                             
 //end selected
 
-//choose which piece to draw
+//choose which piece to draw in the inital draw
 init_red                cp          vga_color_out       white
                         call        vga_write_blk       vga_return
                         be          draw_init_inc       zero            zero
@@ -344,9 +380,30 @@ init_king_blk           cp          vga_color_out       zero
                         call        vga_write_blk       vga_return
                         be          draw_init_inc       zero            zero
                             
+//end choose which piece to draw in the inital draw
+
+//choose which piece to draw
+init_red_p              cp          vga_color_out       white
+                        call        vga_write_blk       vga_return
+                        be          draw_piece_inc      zero            zero
+
+init_king_red_p         cp          vga_color_out       white
+                        call        vga_write_blk       vga_return
+                        be          draw_piece_inc      zero            zero
+
+init_blk_p              cp          vga_color_out       zero
+                        call        vga_write_blk       vga_return
+                        be          draw_piece_inc      zero            zero
+
+init_king_blk_p         cp          vga_color_out       zero
+                        call        vga_write_blk       vga_return
+                        be          draw_piece_inc      zero            zero
+init_blank_p            cp          vga_color_out       three
+                        call        vga_write_blk       vga_return
+                        be          draw_piece_inc      zero            zero
+                            
 //end choose which piece to draw
 
-piece                   .data       0
 selected                .data       0
 negtwo                  .data       -2
 negone                  .data       -1
@@ -526,6 +583,17 @@ board_pos_y             .data       1
                         .data       8
                         .data       8
                         .data       8
+
+#include vga.e
+#include mouse.e
+#include chkvalidsq.e
+#include sd.e
+#include calc_pos.e
+
+sdfasdf                 .data       255
+piece                   .data       0
+tpiece_pos1             .data       0
+tpiece_pos2             .data       0
 board                   .data       0
                         .data       0
                         .data       0
@@ -558,9 +626,4 @@ board                   .data       0
                         .data       0
                         .data       0
                         .data       0
-
-#include vga.e
-#include mouse.e
-#include chkvalidsq.e
-#include sd.e
-#include calc_pos.e
+tpiece                   .data       0

@@ -6,7 +6,6 @@ calc_pos		mult		calc_pos_t1		calc_pos_y		calc_pos_five
 				mult		calc_pos_t6		calc_pos_t5		calc_pos_two
 				add			calc_pos_t7		calc_pos_t1		calc_pos_t3
 				sub			calc_pos_t8		calc_pos_t7		calc_pos_t6
-				sub		 	calc_pos_end	calc_pos_t8		calc_pos_three
 				ret			calc_pos_retvar
 
 calc_pos_y				.data		7
@@ -24,4 +23,5 @@ calc_pos_t6				.data		0
 calc_pos_t7				.data		0
 calc_pos_t8				.data		0
 calc_pos_retvar			.data		0
+daasdfas				.data		255
 calc_pos_end			.data		0
