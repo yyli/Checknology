@@ -506,7 +506,7 @@ board_orig              .data       -1
                         .data       -1
                         .data       -1
                         .data       -1
-                        .data       -1
+                        .data       -2
                         .data       0
                         .data       0
                         .data       0
@@ -515,7 +515,7 @@ board_orig              .data       -1
                         .data       0
                         .data       0
                         .data       0
-                        .data       1
+                        .data       2
                         .data       1
                         .data       1
                         .data       1
@@ -591,14 +591,6 @@ board_pos_y             .data       1
                         .data       8
                         .data       8
                         .data       8
-
-#include vga.e
-#include mouse.e
-#include chkvalidsq.e
-#include sd.e
-#include calc_pos.e
-#include chk_vld_mv.e
-
 piece                   .data       0
 board                   .data       0
                         .data       0
@@ -635,6 +627,11 @@ board                   .data       0
 tpiece_pos1             .data       0
 tpiece_pos2             .data       0
 tpiece                  .data       0
-asdfasdfasdf            .data       255
 test                    .data       0
-asdkjfhanuifehflakjsf   .data       255
+
+#include vga.e
+#include mouse.e
+#include chkvalidsq.e
+#include sd.e
+#include calc_pos.e
+#include chk_vld_mv.e
