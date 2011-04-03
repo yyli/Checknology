@@ -346,10 +346,17 @@ cp_comp_move            cp          select_x            select_x1
                         cpfa        tpiece              board           tpiece_pos1
                         cp          chk_vld_mv_piece    tpiece
                         call        chk_vld_mv          chk_vld_mv_retvar
-                        cp          test                chk_vld_mv_vld
                         bne         pre_draw_piece      chk_vld_mv_vld  one
                         cpta        zero                board           tpiece_pos1
                         cpta        tpiece              board           tpiece_pos2
+                        bne         pre_draw_piece      chk_vld_mv_mid  one
+                        cpta        zero                board           chk_vld_mv_midloc
+                        be          pre_draw_piece      tpiece          negtwo
+                        be          pre_draw_piece      tpiece          two
+                        bne         chk_king_blk        chk_vld_mv_king negone
+                        cpta        negtwo              board           tpiece_pos2
+chk_king_blk            bne         pre_draw_piece      chk_vld_mv_king one
+                        cpta        two                 board           tpiece_pos2
 pre_draw_piece          cp          i                   zero                                        //resets i         
 draw_piece              cpfa        location_x          board_pos_x     i
                         cpfa        location_y          board_pos_y     i
@@ -506,7 +513,7 @@ board_orig              .data       -1
                         .data       -1
                         .data       -1
                         .data       -1
-                        .data       -2
+                        .data       -1
                         .data       0
                         .data       0
                         .data       0
@@ -515,7 +522,7 @@ board_orig              .data       -1
                         .data       0
                         .data       0
                         .data       0
-                        .data       2
+                        .data       1
                         .data       1
                         .data       1
                         .data       1
