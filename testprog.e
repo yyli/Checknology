@@ -1,3 +1,5 @@
+//initalize the board
+                        cp          turnvar             zero
 //draw background
                         cp          vga_x1              zero                                        //copies zero into x1
                         cp          vga_y1              zero                                        //copies zero into y1
@@ -101,7 +103,7 @@ chk_y                   blt         ylow                y               zero
                         blt         yhigh               vga_max_y       y
 //check mouse clicks for selection and reset
 chk_e                   be          cp_reset            rclick          one
-lol                     bne         next                lclick          one
+                        bne         next                lclick          one
                         blt         cp_first            selected        one
                         blt         cp_second           selected        two
                         be          cp_comp_move        two             selected
@@ -347,6 +349,7 @@ cp_comp_move            cp          select_x            select_x1
                         cp          chk_vld_mv_piece    tpiece
                         call        chk_vld_mv          chk_vld_mv_retvar
                         bne         pre_draw_piece      chk_vld_mv_vld  one
+                        not         turnvar             turnvar
                         cpta        zero                board           tpiece_pos1
                         cpta        tpiece              board           tpiece_pos2
                         bne         pre_draw_piece      chk_vld_mv_mid  one
@@ -416,7 +419,6 @@ init_king_blk_p         cp          vga_color_out       zero
 init_blank_p            cp          vga_color_out       three
                         call        vga_write_blk       vga_return
                         be          draw_piece_inc      zero            zero
-                            
 //end choose which piece to draw
 
 selected                .data       0
@@ -642,3 +644,5 @@ test                    .data       0
 #include sd.e
 #include calc_pos.e
 #include chk_vld_mv.e
+
+turnvar                 .data       0
