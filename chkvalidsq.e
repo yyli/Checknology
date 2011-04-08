@@ -4,9 +4,9 @@ chkvalidsq          cp          calc_pos_y          chkvalidsq_q
                     cp          chkvalidsq_ppos     calc_pos_end
                     cpfa        chkvalidsq_piece    board               chkvalidsq_ppos
                     bne         chkvalidsq_skip1    selected            chkvalidsq_zero
+                    be          chkvalidsq_over     chkvalidsq_piece    chkvalidsq_zero
                     be          chkvalidsq_turn_r   turnvar             zero
                     bne         chkvalidsq_turn_b   turnvar             zero
-                    be          chkvalidsq_over     chkvalidsq_piece    chkvalidsq_zero
 chkvalidsq_skip1    bne         chkvalidsq_skip     selected            chkvalidsq_one
                     bne         chkvalidsq_over     chkvalidsq_piece    chkvalidsq_zero                                  
 chkvalidsq_skip     and         chkvalidsq_step1    chkvalidsq_p        chkvalidsq_q
