@@ -39,6 +39,7 @@ draw_init_piece         cpfa        location_x          board_pos_x     i
                         be          init_red            piece           negone
                         be          init_king_blk       piece           two
                         be          init_blk            piece           one
+                        be          init_blank          piece           zero
 draw_init_inc           add         i                   i               one
                         blt         draw_init_piece     i               thirtytwo
 //end draw initial original board
@@ -50,6 +51,7 @@ draw_init_inc           add         i                   i               one
                         cp          vga_color_out       three
                         call        vga_write_blk       vga_return
 //end draw initial turn
+
 //start save xold
 init_grab_loop          cp          width               cur_l                                       //change temp width to cursor length
                         cp          height              cur_l                                       //...         height ...
@@ -394,19 +396,18 @@ draw_piece_inc          add         i                   i               one
 init_red                cp          vga_color_out       white
                         call        vga_write_blk       vga_return
                         be          draw_init_inc       zero            zero
-
 init_king_red           cp          vga_color_out       white
                         call        vga_write_blk       vga_return
                         be          draw_init_inc       zero            zero
-
 init_blk                cp          vga_color_out       zero
                         call        vga_write_blk       vga_return
                         be          draw_init_inc       zero            zero
-
 init_king_blk           cp          vga_color_out       zero
                         call        vga_write_blk       vga_return
                         be          draw_init_inc       zero            zero
-                            
+init_blank              cp          vga_color_out       three
+                        call        vga_write_blk       vga_return
+                        be          draw_init_inc       zero            zero
 //end choose which piece to draw in the inital draw
 
 //choose which piece to draw
