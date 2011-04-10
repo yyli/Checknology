@@ -42,7 +42,14 @@ draw_init_piece         cpfa        location_x          board_pos_x     i
 draw_init_inc           add         i                   i               one
                         blt         draw_init_piece     i               thirtytwo
 //end draw initial original board
-
+//draw initial turn
+                        cp          vga_x1              turn_r_x1
+                        cp          vga_x2              turn_r_x2
+                        cp          vga_y1              turn_r_y1
+                        cp          vga_y2              turn_r_y2
+                        cp          vga_color_out       three
+                        call        vga_write_blk       vga_return
+//end draw initial turn
 //start save xold
 init_grab_loop          cp          width               cur_l                                       //change temp width to cursor length
                         cp          height              cur_l                                       //...         height ...
@@ -72,8 +79,10 @@ main_loop               call        mouse_loop          mouse_holder
                         cp          deltay              mouse_deltay   
                         cp          lclick              mouse_left
                         cp          rclick              mouse_right
+                        be          turn_draw_r         turnvar         zero
+                        bne         turn_draw_b         turnvar         zero
 //start repaint old pos
-                        cp          width               cur_l                                       //sets a temp width variable with the width of the bg that we want to paint
+turn_draw_end           cp          width               cur_l                                       //sets a temp width variable with the width of the bg that we want to paint
                         cp          height              cur_l                                       //sets a temp height ...
                         sub         width-              width           one                         //subtract one from width store in width-
                         sub         height-             height          one                         //...               height ...     height-
@@ -421,6 +430,44 @@ init_blank_p            cp          vga_color_out       three
                         be          draw_piece_inc      zero            zero
 //end choose which piece to draw
 
+//draw who's turn it is
+turn_draw_r             cp          vga_x1              turn_b_x1
+                        cp          vga_x2              turn_b_x2
+                        cp          vga_y1              turn_b_y1
+                        cp          vga_y2              turn_b_y2
+                        cp          vga_color_out       white
+                        call        vga_write_blk       vga_return
+                        cp          vga_x1              turn_r_x1
+                        cp          vga_x2              turn_r_x2
+                        cp          vga_y1              turn_r_y1
+                        cp          vga_y2              turn_r_y2
+                        cp          vga_color_out       three
+                        call        vga_write_blk       vga_return
+                        be          turn_draw_end       zero            zero
+turn_draw_b             cp          vga_x1              turn_r_x1
+                        cp          vga_x2              turn_r_x2
+                        cp          vga_y1              turn_r_y1
+                        cp          vga_y2              turn_r_y2
+                        cp          vga_color_out       white
+                        call        vga_write_blk       vga_return                        
+                        cp          vga_x1              turn_b_x1
+                        cp          vga_x2              turn_b_x2
+                        cp          vga_y1              turn_b_y1
+                        cp          vga_y2              turn_b_y2
+                        cp          vga_color_out       three
+                        call        vga_write_blk       vga_return
+                        be          turn_draw_end       zero            zero
+
+//end draw who's turn it is
+
+turn_b_x1               .data       330
+turn_b_x2               .data       340
+turn_b_y1               .data       300
+turn_b_y2               .data       310
+turn_r_x1               .data       330
+turn_r_x2               .data       340
+turn_r_y1               .data       10
+turn_r_y2               .data       20
 selected                .data       0
 negtwo                  .data       -2
 negone                  .data       -1
@@ -637,6 +684,7 @@ tpiece_pos1             .data       0
 tpiece_pos2             .data       0
 tpiece                  .data       0
 test                    .data       0
+turnvar                 .data       0
 
 #include vga.e
 #include mouse.e
@@ -644,5 +692,3 @@ test                    .data       0
 #include sd.e
 #include calc_pos.e
 #include chk_vld_mv.e
-
-turnvar                 .data       0
