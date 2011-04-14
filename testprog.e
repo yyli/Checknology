@@ -29,7 +29,8 @@ bg_draw_loop            cp          vga_x1              w_i                     
 draw_first_opt          call        draw_pvp            draw_ai_retvar                              //clear option selector
 draw_init_piece_i       cp          i                   zero                                        //resets i
                         cp          turnvar             zero                                        //resets turn
-                        call        turn_draw_c         retvar                                      //clear the turn indicator                                      
+                        call        turn_draw_c         retvar                                      //clear the turn indicator     
+                        call        chk_win_clear       chk_win_retvar                              //clears the winning area        
 draw_init_piece         cpfa        location_x          board_pos_x     i
                         cpfa        location_y          board_pos_y     i
                         cpfa        piece               board_orig      i
@@ -81,7 +82,8 @@ init_grab_in_loop       add         pos_w_i             w_i             x       
 
 //////start looping here
 
-main_loop               be          ai_mouse_skip       ai_on_e                 one
+main_loop               call        chk_win             chk_win_retvar
+                        be          ai_mouse_skip       ai_on_e                 one
                         be          ai_mouse_skip       ai_on_m                 one
 main_loop2              call        mouse_loop          mouse_holder
                         cp          deltax              mouse_deltax
@@ -672,17 +674,17 @@ pos_w_i                 .data       0
 lclick                  .data       0
 rclick                  .data       0
 board_orig              .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       0
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
                         .data       0
                         .data       0
                         .data       0
@@ -813,3 +815,4 @@ turnvar                 .data       0
 #include calc_pos.e
 #include chk_vld_mv.e
 #include draw_ai.e
+#include chk_win.e
