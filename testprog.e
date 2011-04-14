@@ -41,6 +41,10 @@ draw_init_piece         cpfa        location_x          board_pos_x     i
                         sub         dump                location_y      one
                         mult        vga_y1              dump            width_square
                         mult        vga_y2              location_y      width_square
+                        cp          w_i                 zero
+                        cp          h_i                 zero
+                        cp          start_draw_x        vga_x1
+                        cp          start_draw_y        vga_y1
                         be          init_king_red       piece           negtwo
                         be          init_red            piece           negone
                         be          init_king_blk       piece           two
@@ -394,6 +398,10 @@ draw_piece              cpfa        location_x          board_pos_x     i
                         sub         dump                location_y      one
                         mult        vga_y1              dump            width_square
                         mult        vga_y2              location_y      width_square
+                        cp          w_i                 zero
+                        cp          h_i                 zero
+                        cp          start_draw_x        vga_x1
+                        cp          start_draw_y        vga_y1
                         be          init_king_red_p     piece           negtwo
                         be          init_red_p          piece           negone
                         be          init_king_blk_p     piece           two
@@ -406,39 +414,126 @@ draw_piece_inc          add         i                   i               one
 //end selected
 
 //choose which piece to draw in the inital draw
-init_red                cp          vga_color_out       white
-                        call        vga_write_blk       vga_return
-                        be          draw_init_inc       zero            zero
-init_king_red           cp          vga_color_out       white
-                        call        vga_write_blk       vga_return
-                        be          draw_init_inc       zero            zero
-init_blk                cp          vga_color_out       zero
-                        call        vga_write_blk       vga_return
-                        be          draw_init_inc       zero            zero
-init_king_blk           cp          vga_color_out       zero
-                        call        vga_write_blk       vga_return
-                        be          draw_init_inc       zero            zero
+init_red                add         vga_x1              w_i             start_draw_x                //copy w_i (width incrementor) into x1
+                        add         vga_y1              h_i             start_draw_y                //copy h_i (height incrementor) into y1
+                        mult        p_i                 width_square    h_i                         //mult h_i with i (array incrementor)
+                        add         p_i                 p_i             w_i                         //add w_i to i
+                        cpfa        vga_color_out       piece_red       p_i
+                        call        vga_write_one       vga_return
+                        be          red_setzero         w_i             width_square               //if width is maxwidth-1 then set_cur_for_write it to zero
+                        add         w_i                 w_i             one                         //add one to w_i
+                        be          init_red            zero            zero
+init_king_red           add         vga_x1              w_i             start_draw_x                //copy w_i (width incrementor) into x1
+                        add         vga_y1              h_i             start_draw_y                //copy h_i (height incrementor) into y1
+                        mult        p_i                 width_square    h_i                         //mult h_i with i (array incrementor)
+                        add         p_i                 p_i             w_i                         //add w_i to i
+                        cpfa        vga_color_out       piece_red_k     p_i
+                        call        vga_write_one       vga_return
+                        be          redk_setzero        w_i             width_square               //if width is maxwidth-1 then set_cur_for_write it to zero
+                        add         w_i                 w_i             one                         //add one to w_i
+                        be          init_king_red       zero            zero
+init_blk                add         vga_x1              w_i             start_draw_x                //copy w_i (width incrementor) into x1
+                        add         vga_y1              h_i             start_draw_y                //copy h_i (height incrementor) into y1
+                        mult        p_i                 width_square    h_i                         //mult h_i with i (array incrementor)
+                        add         p_i                 p_i             w_i                         //add w_i to i
+                        cpfa        vga_color_out       piece_blk       p_i
+                        call        vga_write_one       vga_return
+                        be          blk_setzero         w_i             width_square               //if width is maxwidth-1 then set_cur_for_write it to zero
+                        add         w_i                 w_i             one                         //add one to w_i
+                        be          init_blk            zero            zero
+init_king_blk           add         vga_x1              w_i             start_draw_x                //copy w_i (width incrementor) into x1
+                        add         vga_y1              h_i             start_draw_y                //copy h_i (height incrementor) into y1
+                        mult        p_i                 width_square    h_i                         //mult h_i with i (array incrementor)
+                        add         p_i                 p_i             w_i                         //add w_i to i
+                        cpfa        vga_color_out       piece_blk_k     p_i
+                        call        vga_write_one       vga_return
+                        be          blkk_setzero        w_i             width_square               //if width is maxwidth-1 then set_cur_for_write it to zero
+                        add         w_i                 w_i             one                         //add one to w_i
+                        be          init_king_blk       zero            zero
 init_blank              cp          vga_color_out       three
                         call        vga_write_blk       vga_return
                         be          draw_init_inc       zero            zero
 //end choose which piece to draw in the inital draw
 
+//setzero functions for which piece to draw
+redk_setzero            cp          w_i                 zero
+                        be          draw_init_inc       h_i             width_square
+                        add         h_i                 h_i             one
+                        call        init_king_red       dump
+
+red_setzero             cp          w_i                 zero
+                        be          draw_init_inc       h_i             width_square
+                        add         h_i                 h_i             one
+                        call        init_red            dump
+
+blk_setzero             cp          w_i                 zero
+                        be          draw_init_inc       h_i             width_square
+                        add         h_i                 h_i             one
+                        call        init_blk            dump
+
+blkk_setzero            cp          w_i                 zero
+                        be          draw_init_inc       h_i             width_square
+                        add         h_i                 h_i             one
+                        call        init_king_blk       dump
+
+red_p_setzero           cp          w_i                 zero
+                        be          draw_piece_inc      h_i             width_square
+                        add         h_i                 h_i             one
+                        call        init_red_p          dump
+
+redk_p_setzero          cp          w_i                 zero
+                        be          draw_piece_inc      h_i             width_square
+                        add         h_i                 h_i             one
+                        call        init_king_red_p     dump
+
+blk_p_setzero           cp          w_i                 zero
+                        be          draw_piece_inc      h_i             width_square
+                        add         h_i                 h_i             one
+                        call        init_blk_p          dump
+
+blkk_p_setzero          cp          w_i                 zero
+                        be          draw_piece_inc      h_i             width_square
+                        add         h_i                 h_i             one
+                        call        init_king_blk_p     dump
+
+
 //choose which piece to draw
-init_red_p              cp          vga_color_out       white
-                        call        vga_write_blk       vga_return
-                        be          draw_piece_inc      zero            zero
-
-init_king_red_p         cp          vga_color_out       white
-                        call        vga_write_blk       vga_return
-                        be          draw_piece_inc      zero            zero
-
-init_blk_p              cp          vga_color_out       zero
-                        call        vga_write_blk       vga_return
-                        be          draw_piece_inc      zero            zero
-
-init_king_blk_p         cp          vga_color_out       zero
-                        call        vga_write_blk       vga_return
-                        be          draw_piece_inc      zero            zero
+init_red_p              add         vga_x1              w_i             start_draw_x                //copy w_i (width incrementor) into x1
+                        add         vga_y1              h_i             start_draw_y                //copy h_i (height incrementor) into y1
+                        mult        p_i                 width_square    h_i                         //mult h_i with i (array incrementor)
+                        add         p_i                 p_i             w_i                         //add w_i to i
+                        cpfa        vga_color_out       piece_red       p_i
+                        call        vga_write_one       vga_return
+                        be          red_p_setzero       w_i             width_square               //if width is maxwidth-1 then set_cur_for_write it to zero
+                        add         w_i                 w_i             one                         //add one to w_i
+                        be          init_red_p          zero            zero
+init_king_red_p         add         vga_x1              w_i             start_draw_x                //copy w_i (width incrementor) into x1
+                        add         vga_y1              h_i             start_draw_y                //copy h_i (height incrementor) into y1
+                        mult        p_i                 width_square    h_i                         //mult h_i with i (array incrementor)
+                        add         p_i                 p_i             w_i                         //add w_i to i
+                        cpfa        vga_color_out       piece_red_k     p_i
+                        call        vga_write_one       vga_return
+                        be          redk_p_setzero      w_i             width_square               //if width is maxwidth-1 then set_cur_for_write it to zero
+                        add         w_i                 w_i             one                         //add one to w_i
+                        be          init_king_red_p     zero            zero
+init_blk_p              add         vga_x1              w_i             start_draw_x                //copy w_i (width incrementor) into x1
+                        add         vga_y1              h_i             start_draw_y                //copy h_i (height incrementor) into y1
+                        mult        p_i                 width_square    h_i                         //mult h_i with i (array incrementor)
+                        add         p_i                 p_i             w_i                         //add w_i to i
+                        cpfa        vga_color_out       piece_blk       p_i
+                        call        vga_write_one       vga_return
+                        be          blk_p_setzero       w_i             width_square               //if width is maxwidth-1 then set_cur_for_write it to zero
+                        add         w_i                 w_i             one                         //add one to w_i
+                        be          init_blk_p          zero            zero
+init_king_blk_p         add         vga_x1              w_i             start_draw_x                //copy w_i (width incrementor) into x1
+                        add         vga_y1              h_i             start_draw_y                //copy h_i (height incrementor) into y1
+                        mult        p_i                 width_square    h_i                         //mult h_i with i (array incrementor)
+                        add         p_i                 p_i             w_i                         //add w_i to i
+                        cpfa        vga_color_out       piece_blk_k     p_i
+                        call        vga_write_one       vga_return
+                        be          blkk_p_setzero      w_i             width_square               //if width is maxwidth-1 then set_cur_for_write it to zero
+                        add         w_i                 w_i             one                         //add one to w_i
+                        be          init_king_blk_p     zero            zero
 init_blank_p            cp          vga_color_out       three
                         call        vga_write_blk       vga_return
                         be          draw_piece_inc      zero            zero
@@ -562,7 +657,9 @@ ai_mouse_skip           be         main_loop_ai         turnvar                 
                         // call        vga_write_blk       vga_return
                         // halt
 
-
+p_i                     .data       0
+start_draw_x            .data       0
+start_draw_y            .data       0
 ai_on_e                 .data       1
 ai_on_m                 .data       0
 pvp_but_xmax            .data       586
@@ -604,6 +701,7 @@ retvar1                 .data       0
 location_x              .data       0
 location_y              .data       0
 width_square            .data       40
+width_square-           .data       39
 width_square2           .data       0
 green                   .data       28
 ten                     .data       5 
@@ -674,17 +772,17 @@ pos_w_i                 .data       0
 lclick                  .data       0
 rclick                  .data       0
 board_orig              .data       -1
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
+                        .data       -1
                         .data       0
                         .data       0
                         .data       0
@@ -816,3 +914,4 @@ turnvar                 .data       0
 #include chk_vld_mv.e
 #include draw_ai.e
 #include chk_win.e
+#include pieces.e
