@@ -24,7 +24,8 @@ bg_draw_loop            cp          vga_x1              w_i                     
 //end draw background
 
 //draw initial original board
-draw_init_piece_i       cp          i                   zero                                        //resets i         
+draw_init_piece_i       cp          i                   zero                                        //resets i
+                        cp          turnvar             zero                                        //resets turn         
 draw_init_piece         cpfa        location_x          board_pos_x     i
                         cpfa        location_y          board_pos_y     i
                         cpfa        piece               board_orig      i
@@ -115,7 +116,9 @@ chk_y                   blt         ylow                y               zero
 //check mouse clicks for selection and reset
 chk_e                   be          cp_reset            rclick          one
                         bne         next                lclick          one
-                        blt         cp_first            selected        one
+                        blt         menu_opts           board_w         x
+                        blt         menu_opts           board_h         y
+menu_opts_aft           blt         cp_first            selected        one
                         blt         cp_second           selected        two
                         be          cp_comp_move        two             selected
                         blt         cp_comp_move        two             selected
@@ -461,6 +464,32 @@ turn_draw_b             cp          vga_x1              turn_r_x1
 
 //end draw who's turn it is
 
+//check if its outside the board or not
+menu_opts               blt         menu_restart_game1  x                       rest_game_but_xmax
+menu_end                be          menu_opts_aft       zero                    zero         
+menu_restart_game1      blt         menu_restart_game2  rest_game_but_xmin      x 
+                        be          menu_end            zero                    zero 
+menu_restart_game2      blt         menu_restart_game3  y                       rest_game_but_ymax
+                        be          menu_end            zero                    zero 
+menu_restart_game3      blt         menu_restart_game4  rest_game_but_ymin      y
+                        be          menu_end            zero                    zero 
+menu_restart_game4      be          draw_init_piece_i   zero                    zero  
+
+
+//end checks if its outside the board
+
+                        // cp          vga_x2              rest_game_but_xmax
+                        // cp          vga_x1              rest_game_but_xmin
+                        // cp          vga_y2              rest_game_but_ymax
+                        // cp          vga_y1              rest_game_but_ymin
+                        // cp          vga_color_out       three
+                        // call        vga_write_blk       vga_return
+                        // halt
+
+rest_game_but_xmax      .data       595
+rest_game_but_xmin      .data       435
+rest_game_but_ymax      .data       240
+rest_game_but_ymin      .data       210
 turn_b_x1               .data       330
 turn_b_x2               .data       340
 turn_b_y1               .data       300
