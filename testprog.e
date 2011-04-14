@@ -809,10 +809,10 @@ board_orig              .data       -1
                         .data       1
                         .data       1
                         .data       1
-                        .data       2
-                        .data       2
-                        .data       2
-                        .data       2
+                        .data       1
+                        .data       1
+                        .data       1
+                        .data       1
 board_pos_x             .data       2
                         .data       4
                         .data       6
