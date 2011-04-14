@@ -380,11 +380,9 @@ cp_comp_move            cp          select_x            select_x1
                         not         turnvar             turnvar
                         cpta        zero                board           tpiece_pos1
                         cpta        tpiece              board           tpiece_pos2
-                        bne         pre_draw_piece      chk_vld_mv_mid  one
+                        bne         chk_king            chk_vld_mv_mid  one
                         cpta        zero                board           chk_vld_mv_midloc
-                        be          pre_draw_piece      tpiece          negtwo
-                        be          pre_draw_piece      tpiece          two
-                        bne         chk_king_blk        chk_vld_mv_king negone
+chk_king                bne         chk_king_blk        chk_vld_mv_king negone
                         cpta        negtwo              board           tpiece_pos2
 chk_king_blk            bne         pre_draw_piece      chk_vld_mv_king one
                         cpta        two                 board           tpiece_pos2
@@ -791,7 +789,7 @@ board_orig              .data       -1
                         .data       0
                         .data       0
                         .data       0
-                        .data       1
+                        .data       1 
                         .data       1
                         .data       1
                         .data       1
@@ -868,6 +866,11 @@ board_pos_y             .data       1
                         .data       8
                         .data       8
 piece                   .data       0
+tpiece_pos1             .data       0
+tpiece_pos2             .data       0
+tpiece                  .data       0
+test                    .data       0
+turnvar                 .data       0
 board                   .data       0
                         .data       0
                         .data       0
@@ -900,18 +903,13 @@ board                   .data       0
                         .data       0
                         .data       0
                         .data       0
-tpiece_pos1             .data       0
-tpiece_pos2             .data       0
-tpiece                  .data       0
-test                    .data       0
-turnvar                 .data       0
-
+test1                   .data       0
 #include vga.e
 #include mouse.e
 #include chkvalidsq.e
 #include sd.e
 #include calc_pos.e
-#include chk_vld_mv.e
 #include draw_ai.e
 #include chk_win.e
 #include pieces.e
+#include chk_vld_mv.e

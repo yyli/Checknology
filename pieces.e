@@ -4798,8 +4798,7 @@ piece_blk			.data 3
 	.data 3
 	.data 3
 	.data 3
-piece_blk_k
-	.data 3
+piece_blk_k 	.data 3
 	.data 3
 	.data 3
 	.data 3
@@ -6343,6 +6342,63 @@ piece_blk_k
 	.data 3
 	.data 3
 	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	.data 3
+	//
 	.data 3
 	.data 3
 	.data 3
