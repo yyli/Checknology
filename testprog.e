@@ -82,7 +82,9 @@ main_loop               call        mouse_loop          mouse_holder
                         cp          deltay              mouse_deltay   
                         cp          lclick              mouse_left
                         cp          rclick              mouse_right
-                        be          turn_draw_r         turnvar         zero
+                        be          ai_loop_e           ai_on_e         one
+                        be          ai_loop_m           ai_on_m         one
+no_ai                   be          turn_draw_r         turnvar         zero
                         bne         turn_draw_b         turnvar         zero
 //start repaint old pos
 turn_draw_end           cp          width               cur_l                                       //sets a temp width variable with the width of the bg that we want to paint
@@ -478,6 +480,16 @@ menu_restart_game4      be          draw_init_piece_i   zero                    
 
 //end checks if its outside the board
 
+//runs AI
+ai_loop_e               bne         no_ai               turnvar                 zero
+                        //call ai here
+                        not         turnvar             turnvar
+                        be          main_loop           zero                    zero
+ai_loop_m               bne         no_ai               turnvar                 zero
+                        //call ai here
+                        not         turnvar             turnvar
+                        be          main_loop           zero                    zero
+
                         // cp          vga_x2              rest_game_but_xmax
                         // cp          vga_x1              rest_game_but_xmin
                         // cp          vga_y2              rest_game_but_ymax
@@ -486,6 +498,8 @@ menu_restart_game4      be          draw_init_piece_i   zero                    
                         // call        vga_write_blk       vga_return
                         // halt
 
+ai_on_e                 .data       0
+ai_on_m                 .data       0
 rest_game_but_xmax      .data       595
 rest_game_but_xmin      .data       435
 rest_game_but_ymax      .data       240
