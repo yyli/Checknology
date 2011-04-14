@@ -635,12 +635,13 @@ menu_pvp4               cp          ai_on_m             zero
 //runs AI
 ai_loop_e               bne         no_ai               turnvar                 zero
                         //call ai here
+                        call        e_start_ai          e_retvar
                         not         turnvar             turnvar
-                        be          main_loop           zero                    zero
+                        be          pre_draw_piece      zero                    zero
 ai_loop_m               bne         no_ai               turnvar                 zero
                         //call ai here
                         not         turnvar             turnvar
-                        be          main_loop           zero                    zero
+                        be          pre_draw_piece      zero                    zero
 
 //end runs AI
 //check ai to skip mouse
@@ -911,5 +912,7 @@ test1                   .data       0
 #include calc_pos.e
 #include draw_ai.e
 #include chk_win.e
-#include pieces.e
 #include chk_vld_mv.e
+#include pieces.e
+#include Easy_AI.e
+#include rand_num_gen.e
