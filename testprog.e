@@ -26,10 +26,10 @@ bg_draw_loop            cp          vga_x1              w_i                     
 //end draw background
 
 //draw initial original board
+draw_first_opt          call        draw_pvp            draw_ai_retvar                              //clear option selector
 draw_init_piece_i       cp          i                   zero                                        //resets i
-                        cp          turnvar             zero                                        //resets turn       
-                        call        turn_draw_c         retvar                                      //clear the turn indicator
-                        call        draw_pvp            draw_ai_retvar                              //call to write inital location                                      
+                        cp          turnvar             zero                                        //resets turn
+                        call        turn_draw_c         retvar                                      //clear the turn indicator                                      
 draw_init_piece         cpfa        location_x          board_pos_x     i
                         cpfa        location_y          board_pos_y     i
                         cpfa        piece               board_orig      i
@@ -180,7 +180,7 @@ draw_cur_bound          sub         x1                  x               side_2
                         ret         retvar      
 //sets w_i to zero or end bg_draw_loop        
 bg_draw_setzero         cp          w_i                 zero
-                        be          draw_init_piece_i   h_i             height-
+                        be          draw_first_opt      h_i             height-
                         add         h_i                 h_i             one
                         call        bg_draw_loop        dump
 //sets w_i to zero or end grab_inner_loop        
@@ -639,7 +639,7 @@ side_2                  .data       1
 cur_l                   .data       5
 dump                    .data       0
 white                   .data       255
-cur_color               .data       252
+cur_color               .data       150
 black                   .data       0
 zero                    .data       0
 one                     .data       1
