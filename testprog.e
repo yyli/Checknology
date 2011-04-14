@@ -1,5 +1,7 @@
 //initalize the board
                         cp          turnvar             zero
+                        cp          ai_on_e             zero
+                        cp          ai_on_m             zero      
 //draw background
                         cp          vga_x1              zero                                        //copies zero into x1
                         cp          vga_y1              zero                                        //copies zero into y1
@@ -17,7 +19,7 @@ bg_draw_loop            cp          vga_x1              w_i                     
                         add         i                   i               w_i                         //add w_i to i
                         call        SDcard_check1       SDcard_ptr
                         cp          vga_color_out       SDcard_data
-                        call        vga_write_one       vga_return                                  //call write one pixel
+                        call        vga_write_one       vga_return
                         be          bg_draw_setzero     w_i             width-                      //if width is maxwidth-1 then set_cur_for_write it to zero
                         add         w_i                 w_i             one                         //add one to w_i
                         call        bg_draw_loop        dump                                        //repaint_loop bg_draw_loop
@@ -25,7 +27,9 @@ bg_draw_loop            cp          vga_x1              w_i                     
 
 //draw initial original board
 draw_init_piece_i       cp          i                   zero                                        //resets i
-                        cp          turnvar             zero                                        //resets turn         
+                        cp          turnvar             zero                                        //resets turn       
+                        call        turn_draw_c         retvar                                      //clear the turn indicator
+                        call        draw_pvp            draw_ai_retvar                              //call to write inital location                                      
 draw_init_piece         cpfa        location_x          board_pos_x     i
                         cpfa        location_y          board_pos_y     i
                         cpfa        piece               board_orig      i
@@ -77,12 +81,14 @@ init_grab_in_loop       add         pos_w_i             w_i             x       
 
 //////start looping here
 
-main_loop               call        mouse_loop          mouse_holder
+main_loop               be          ai_mouse_skip       ai_on_e                 one
+                        be          ai_mouse_skip       ai_on_m                 one
+main_loop2              call        mouse_loop          mouse_holder
                         cp          deltax              mouse_deltax
                         cp          deltay              mouse_deltay   
                         cp          lclick              mouse_left
                         cp          rclick              mouse_right
-                        be          ai_loop_e           ai_on_e         one
+main_loop_ai            be          ai_loop_e           ai_on_e         one
                         be          ai_loop_m           ai_on_m         one
 no_ai                   be          turn_draw_r         turnvar         zero
                         bne         turn_draw_b         turnvar         zero
@@ -463,19 +469,70 @@ turn_draw_b             cp          vga_x1              turn_r_x1
                         cp          vga_color_out       three
                         call        vga_write_blk       vga_return
                         be          turn_draw_end       zero            zero
+turn_draw_c             cp          vga_x1              turn_r_x1
+                        cp          vga_x2              turn_r_x2
+                        cp          vga_y1              turn_r_y1
+                        cp          vga_y2              turn_r_y2
+                        cp          vga_color_out       white
+                        call        vga_write_blk       vga_return                        
+                        cp          vga_x1              turn_b_x1
+                        cp          vga_x2              turn_b_x2
+                        cp          vga_y1              turn_b_y1
+                        cp          vga_y2              turn_b_y2
+                        cp          vga_color_out       white
+                        call        vga_write_blk       vga_return
+                        ret         retvar
 
 //end draw who's turn it is
 
 //check if its outside the board or not
 menu_opts               blt         menu_restart_game1  x                       rest_game_but_xmax
-menu_end                be          menu_opts_aft       zero                    zero         
+menu_pvp                blt         menu_pvp1           x                       pvp_but_xmax
+menu_ai_e               blt         menu_ai_e1          x                       ai_e_but_xmax
+menu_ai_m               blt         menu_ai_m1          x                       ai_m_but_xmax
+menu_end                be          menu_opts_aft       zero                    zero     
+    
 menu_restart_game1      blt         menu_restart_game2  rest_game_but_xmin      x 
-                        be          menu_end            zero                    zero 
+                        be          menu_ai_e           zero                    zero 
 menu_restart_game2      blt         menu_restart_game3  y                       rest_game_but_ymax
-                        be          menu_end            zero                    zero 
+                        be          menu_ai_e           zero                    zero 
 menu_restart_game3      blt         menu_restart_game4  rest_game_but_ymin      y
+                        be          menu_ai_e           zero                    zero
+menu_restart_game4      be          draw_init_piece_i   zero                    zero 
+
+menu_ai_e1              blt         menu_ai_e2          ai_e_but_xmin           x 
+                        be          menu_ai_m           zero                    zero 
+menu_ai_e2              blt         menu_ai_e3          y                       ai_e_but_ymax
+                        be          menu_ai_m           zero                    zero 
+menu_ai_e3              blt         menu_ai_e4          ai_e_but_ymin           y
+                        be          menu_ai_m           zero                    zero 
+menu_ai_e4              cp          ai_on_m             zero
+                        cp          ai_on_e             one
+                        call        draw_ai_e           draw_ai_retvar
+                        be          draw_init_piece_i   zero                    zero
+
+menu_ai_m1              blt         menu_ai_m2          ai_m_but_xmin           x 
+                        be          menu_pvp            zero                    zero 
+menu_ai_m2              blt         menu_ai_m3          y                       ai_m_but_ymax
+                        be          menu_pvp            zero                    zero 
+menu_ai_m3              blt         menu_ai_m4          ai_m_but_ymin           y
+                        be          menu_pvp            zero                    zero 
+menu_ai_m4              cp          ai_on_m             one
+                        cp          ai_on_e             zero
+                        call        draw_ai_m           draw_ai_retvar
+                        be          draw_init_piece_i   zero                    zero
+                
+menu_pvp1               blt         menu_pvp2           pvp_but_xmin            x 
                         be          menu_end            zero                    zero 
-menu_restart_game4      be          draw_init_piece_i   zero                    zero  
+menu_pvp2               blt         menu_pvp3           y                       pvp_but_ymax
+                        be          menu_end            zero                    zero 
+menu_pvp3               blt         menu_pvp4           pvp_but_ymin            y
+                        be          menu_end            zero                    zero 
+menu_pvp4               cp          ai_on_m             zero
+                        cp          ai_on_e             zero
+                        call        draw_pvp            draw_ai_retvar
+                        be          draw_init_piece_i   zero                    zero   
+
 
 
 //end checks if its outside the board
@@ -490,16 +547,34 @@ ai_loop_m               bne         no_ai               turnvar                 
                         not         turnvar             turnvar
                         be          main_loop           zero                    zero
 
-                        // cp          vga_x2              rest_game_but_xmax
-                        // cp          vga_x1              rest_game_but_xmin
-                        // cp          vga_y2              rest_game_but_ymax
-                        // cp          vga_y1              rest_game_but_ymin
+//end runs AI
+//check ai to skip mouse
+ai_mouse_skip           be         main_loop_ai         turnvar                 zero
+                        be         main_loop2           zero                    zero
+//end check ai to skip mouse
+                        // cp          vga_x2              ai_e_but_xmax
+                        // cp          vga_x1              ai_e_but_xmin
+                        // cp          vga_y2              ai_e_but_ymax
+                        // cp          vga_y1              ai_e_but_ymin
                         // cp          vga_color_out       three
                         // call        vga_write_blk       vga_return
                         // halt
 
-ai_on_e                 .data       0
+
+ai_on_e                 .data       1
 ai_on_m                 .data       0
+pvp_but_xmax            .data       586
+pvp_but_xmin            .data       434
+pvp_but_ymax            .data       67
+pvp_but_ymin            .data       40
+ai_m_but_xmax           .data       586
+ai_m_but_xmin           .data       434
+ai_m_but_ymax           .data       167
+ai_m_but_ymin           .data       140
+ai_e_but_xmax           .data       586
+ai_e_but_xmin           .data       434
+ai_e_but_ymax           .data       134
+ai_e_but_ymin           .data       107
 rest_game_but_xmax      .data       595
 rest_game_but_xmin      .data       435
 rest_game_but_ymax      .data       240
@@ -575,6 +650,7 @@ five                    .data       5
 six                     .data       6
 seven                   .data       7
 eight                   .data       8
+fifteen                 .data       15
 thirtytwo               .data       32
 deltax                  .data       0
 deltay                  .data       0
@@ -736,3 +812,4 @@ turnvar                 .data       0
 #include sd.e
 #include calc_pos.e
 #include chk_vld_mv.e
+#include draw_ai.e
