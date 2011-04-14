@@ -5,8 +5,15 @@ chk_vld_mv                  cp              chk_vld_mv_xvldv            chk_vld_
                             cp              calc_pos_x                  chk_vld_mv_x2
                             cp              calc_pos_y                  chk_vld_mv_y2
                             call            calc_pos                    calc_pos_retvar
+                            cp              chk_vld_mv_pos2             calc_pos_end
                             cpfa            chk_vld_mv_dump             board                   calc_pos_end
-                            bne             chk_vld_mv_end              chk_vld_mv_dump         zero
+                            be              chk_vld_mv_reg              chk_jumps_avl           zero
+                            be              chk_vld_mv_reg              calc_pos_end            chk_jumps_pos1
+                            be              chk_vld_mv_reg              calc_pos_end            chk_jumps_pos2
+                            be              chk_vld_mv_reg              calc_pos_end            chk_jumps_pos3
+                            be              chk_vld_mv_reg              calc_pos_end            chk_jumps_pos4
+                            be              chk_vld_mv_end              zero                    zero
+chk_vld_mv_reg              bne             chk_vld_mv_end              chk_vld_mv_dump         zero
                             blt             chk_vld_mv_end              eight                   chk_vld_mv_x2
                             blt             chk_vld_mv_end              eight                   chk_vld_mv_x2
                             blt             chk_vld_mv_end              chk_vld_mv_x2           one
@@ -166,6 +173,7 @@ chk_vld_mv_adjust           cp              chk_vld_mv_piece            chk_vld_
                             cp              chk_vld_mv_piece2           chk_vld_mv_negone
                             be              chk_vld_mv_adjust_end       zero                    zero                     
 
+chk_vld_mv_pos2             .data           0
 chk_vld_mv_zero             .data           0
 chk_vld_mv_one              .data           1
 chk_vld_mv_two              .data           2

@@ -28,6 +28,7 @@ bg_draw_loop            cp          vga_x1              w_i                     
 //draw initial original board
 draw_first_opt          call        draw_pvp            draw_ai_retvar                              //clear option selector
 draw_init_piece_i       cp          i                   zero                                        //resets i
+                        cp          jumps_again         zero                                        //resets jumps again
                         cp          turnvar             zero                                        //resets turn
                         call        turn_draw_c         retvar                                      //clear the turn indicator     
                         call        chk_win_clear       chk_win_retvar                              //clears the winning area        
@@ -380,7 +381,6 @@ cp_comp_move            cp          select_x            select_x1
                         cp          chk_vld_mv_mid_p    chk_vld_mv_mid
                         cp          chk_vld_mv_king_p   chk_vld_mv_king
                         cp          chk_vld_mv_midloc_p chk_vld_mv_midloc
-                        be          skip_to_reg         jumps_again     zero
 skip_to_reg             bne         pre_draw_piece      chk_vld_mv_vld_p    one           
                         cpta        zero                board               tpiece_pos1
                         cpta        tpiece              board               tpiece_pos2
@@ -389,11 +389,6 @@ skip_to_reg             bne         pre_draw_piece      chk_vld_mv_vld_p    one
                         cpta        zero                board               chk_vld_mv_midloc_p
                         call        chk_jumps           chk_jumps_retvar
                         cp          jumps_again         chk_jumps_end
-                        in          5                   dump
-                        out         1                   dump
-                        out         2                   jumps_again
-                        out         3                   chk_jumps_vld2
-                        out         4                   chk_jumps_vld3
 chk_king                bne         chk_king_blk        chk_vld_mv_king_p negone
                         cpta        negtwo              board           tpiece_pos2
 chk_king_blk            bne         pre_draw_piece      chk_vld_mv_king_p one
@@ -703,6 +698,7 @@ turn_r_y2               .data       20
 selected                .data       0
 negtwo                  .data       -2
 negone                  .data       -1
+negmid                  .data       -32000
 retvar2                 .data       0
 select_x                .data       0
 select_y                .data       0
@@ -805,7 +801,6 @@ board_orig              .data       -1
                         .data       0
                         .data       0
                         .data       0
-                        .data       1 
                         .data       1
                         .data       1
                         .data       1
@@ -814,9 +809,10 @@ board_orig              .data       -1
                         .data       1
                         .data       1
                         .data       1
-                        .data       1
-                        .data       1
-                        .data       1
+                        .data       2
+                        .data       2
+                        .data       2
+                        .data       2
 board_pos_x             .data       2
                         .data       4
                         .data       6
