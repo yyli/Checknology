@@ -1,4 +1,5 @@
-m_start_ai	be		m_y_val		zero		zero
+
+m_start_ai  be      m_y_val     zero        zero
 m_y_val	be	AFTER 		m_y		m_8
 	add 	m_y 		m_y 		m_1
 	cp	m_x		m_0
@@ -76,7 +77,7 @@ enemy_L	add	m_xLL		m_N1		m_xL		// x--
 	bne	check_R		m_p@xLL		m_0		// if its 0 the enemy piece can be captured (open space on other side of enemy) continue and record this piece
 	
 	cpta	m_x		m_x_cap_L	num_cap_L
-	cpta	m_x		m_y_cap_L	num_cap_L
+	cpta	m_y		m_y_cap_L	num_cap_L
 	add	num_cap_L	m_1		num_cap_L
 	be	check_R		m_1		m_1
 
@@ -89,11 +90,16 @@ ZERO_L	cpta	m_x		m_x_mov_L	num_mov_L
 								//RIGHT_DOWN
 
 check_R	blt	m_x_val		m_8		m_xR		// check if right is out of bounds
-								//m_p@xR = get new value at (x+1,y+1) = = (m_xR,m_y+) this gets what piece is at the xR space
+
+
+							//m_p@xR = get new value at (x+1,y+1) = = (m_xR,m_y+) this gets what piece is at the xR space
 	cp	calc_pos_x	m_xR	
 	cp	calc_pos_y	m_y+
 	call	calc_pos	calc_pos_retvar
 	cpfa	m_p@xR		board		calc_pos_end
+
+
+
 
 	blt	m_x_val		m_p@xR		m_0
 	be	ZERO_R		m_p@xR		m_0
@@ -104,13 +110,16 @@ enemy_R	add	m_xRR		m_1		m_xR		// x++
 	blt	m_x_val		m_8		m_xRR
 	blt	m_x_val		m_8		m_y++		
 								//check if m_xRR & m_y++ are out of bounds. if so, go to x_val
+
 								//m_p@xRR = the piece at (x+2,y+2) = = (m_xRR, m_y++)
+
 	cp	calc_pos_x	m_xRR	
 	cp	calc_pos_y	m_y++
 	call	calc_pos	calc_pos_retvar
 	cpfa	m_p@xRR		board		calc_pos_end	
 
-	cp	m_xLL		m_0
+	
+	cp	m_xRR		m_0
 	cp	m_y++		m_0
 
 	bne	m_x_val		m_p@xRR		m_0				// if its 0 the enemy piece can be captured (open space on other side of enemy) continue and record this piece
@@ -315,6 +324,11 @@ cap_kLU	be	m_cap_L		m_both_chk	m_2				//makes sure to that both right and left c
 	add	m_both_chk	m_both_chk	m_1
 	blt	cap_kRU		num_cap_LU	m_1
 
+	cp	m_xL		m_0
+	cp	m_y-		m_0
+	cp	m_xLL		m_0
+	cp	m_y--		m_0
+
 	cpfa	m_x		m_xk_cap_LU	m_0				//will always cap enemy closest to own side
 	cpfa	m_y		m_yk_cap_LU	m_0
 
@@ -343,11 +357,6 @@ cap_kLU	be	m_cap_L		m_both_chk	m_2				//makes sure to that both right and left c
 	call	calc_pos	calc_pos_retvar
 	cpfa	m_piece		board		calc_pos_end
 
-	cp	m_xL		m_0
-	cp	m_y-		m_0
-	cp	m_xLL		m_0
-	cp	m_y--		m_0
-
 	cpta	m_N2		board		calc_pos_end
 
 	be	m_sub0		m_alt		m_1
@@ -364,6 +373,11 @@ m_sub0	add	m_alt		m_alt		m_N1
 cap_kRU	be	m_cap_R		m_both_chk	m_2
 	add	m_both_chk	m_both_chk	m_1
 	blt	cap_kLU		num_cap_RU	m_1
+
+	cp	m_xR		m_0
+	cp	m_y-		m_0
+	cp	m_xRR		m_0
+	cp	m_y--		m_0
 
 	add	num_cap-	num_cap_RU	m_N1
 
@@ -397,10 +411,6 @@ cap_kRU	be	m_cap_R		m_both_chk	m_2
 	call	calc_pos	calc_pos_retvar
 	cpfa	m_piece		board		calc_pos_end
 
-	cp	m_xR		m_0
-	cp	m_y-		m_0
-	cp	m_xRR		m_0
-	cp	m_y--		m_0
 
 	cpta	m_N2		board		calc_pos_end
 
@@ -418,6 +428,10 @@ m_cap_L	be	m_movLD		m_both_chk	m_4				//makes sure to that both right and left c
 	add	m_both_chk	m_both_chk	m_1
 	blt	m_cap_R		num_cap_L	m_1			
 
+	cp	m_xL		m_0
+	cp	m_y+		m_0
+	cp	m_xLL		m_0
+	cp	m_y++		m_0
 
 	cpfa	m_x		m_x_cap_L	m_0				//will always cap enemy closest to own side
 	cpfa	m_y		m_y_cap_L	m_0
@@ -448,11 +462,7 @@ m_cap_L	be	m_movLD		m_both_chk	m_4				//makes sure to that both right and left c
 	call 	calc_pos 	calc_pos_retvar
 	cpfa 	m_piece		board 	calc_pos_end
 
-	cp	m_xL		m_0
-	cp	m_y+		m_0
-	cp	m_xLL		m_0
-	cp	m_y++		m_0
-
+	be	m_-2_1		m_y++		m_8				//kings regular pieces
 	be	m_-2_1		m_type		m_N2
 	cpta	m_N1		board		calc_pos_end			//convert position after enemy piece -1 for our piece
 	be	m_alt1		m_1		m_1
@@ -475,6 +485,11 @@ m_sub2	add	m_alt		m_alt		m_N1
 m_cap_R	be	m_movRD	m_both_chk	m_4
 	add	m_both_chk	m_both_chk	m_1
 	blt	m_cap_L		num_cap_R	m_1
+
+	cp	m_xR		m_0
+	cp	m_y		m_0
+	cp	m_xRR		m_0
+	cp	m_y++		m_0
 
 	add	num_cap-	num_cap_R	m_N1
 
@@ -507,12 +522,8 @@ m_cap_R	be	m_movRD	m_both_chk	m_4
 	cp 	calc_pos_y	m_y++		
 	call 	calc_pos 	calc_pos_retvar
 	cpfa 	m_piece		board 	calc_pos_end
-
-	cp	m_xR		m_0
-	cp	m_y		m_0
-	cp	m_xRR		m_0
-	cp	m_y++		m_0
-
+	
+	be	m_-2_2		m_y++		m_8				//will king a regular piece that lands on the last row.
 	be	m_-2_2		m_type		m_N2
 	cpta	m_N1		board		calc_pos_end			//convert position after enemy piece -1 for our piece
 	be	m_alt2		m_1		m_1
@@ -535,6 +546,9 @@ m_movLD	be	m_movLU		m_both_chk	m_6
 	add	m_both_chk	m_both_chk	m_1
 	blt	m_movRD		num_mov_L	m_1
 
+	cp	m_y+		m_0
+	cp	m_xL		m_0
+
 	cpfa	m_x		m_x_mov_L	m_0
 	cpfa	m_y		m_y_mov_L	m_0
 
@@ -554,9 +568,7 @@ m_movLD	be	m_movLU		m_both_chk	m_6
 	call	calc_pos	calc_pos_retvar
 	cpfa	m_piece		board		calc_pos_end
 
-	cp	m_y+		m_0
-	cp	m_xL		m_0
-
+	be	m_-2_3		m_y+		m_8
 	be	m_-2_3		m_type		m_N2
 	cpta	m_N1		board		calc_pos_end			//convert position after enemy piece -1 for our piece
 	be	m_alt3		m_1		m_1
@@ -576,6 +588,9 @@ m_sub4	add	m_alt		m_alt		m_N1
 m_movRD	be	m_movRU		m_both_chk	m_6
 	add	m_both_chk	m_both_chk	m_1
 	blt	m_movLD		num_mov_R	m_1
+
+	cp	m_y+		m_0
+	cp	m_xR		m_0
 
 	add	num_mov-	num_mov_R	m_N1
 
@@ -599,9 +614,7 @@ m_movRD	be	m_movRU		m_both_chk	m_6
 	call	calc_pos	calc_pos_retvar
 	cpfa	m_piece		board		calc_pos_end
 
-	cp	m_y+		m_0
-	cp	m_xR		m_0
-
+	be	m_-2_4		m_y+		m_8
 	be	m_-2_4		m_type		m_N2
 	cpta	m_N1		board		calc_pos_end			//convert position after enemy piece -1 for our piece
 	be	m_alt4		m_1		m_1
@@ -621,6 +634,9 @@ m_sub5	add	m_alt		m_alt		m_N1
 m_movRU	be	cap_L		m_both_chk	m_8
 	add	m_both_chk	m_both_chk	m_1
 	blt	m_movLU		num_mov_RU	m_1
+
+	cp	m_y-		m_0
+	cp	m_xR		m_0
 
 	add	num_mov-	num_mov_LU	m_N1
 
@@ -644,9 +660,6 @@ m_movRU	be	cap_L		m_both_chk	m_8
 	call	calc_pos	calc_pos_retvar
 	cpfa	m_piece		board		calc_pos_end
 
-	cp	m_y-		m_0
-	cp	m_xR		m_0
-
 	cpta	m_N2		board		calc_pos_end
 
 	be	m_sub6		m_alt		m_1
@@ -660,6 +673,9 @@ m_sub6	add	m_alt		m_alt		m_N1
 m_movLU	be	cap_L		m_both_chk	m_8
 	add	m_both_chk	m_both_chk	m_1
 	blt	m_movRU		num_mov_LU	m_1
+
+	cp	m_y-		m_0
+	cp	m_xL		m_0
 
 	cpfa	m_x		m_xk_mov_LU	m_0
 	cpfa	m_y		m_yk_mov_LU	m_0
@@ -678,9 +694,6 @@ m_movLU	be	cap_L		m_both_chk	m_8
 	cp	calc_pos_y	m_y-
 	call	calc_pos	calc_pos_retvar
 	cpfa	m_piece		board		calc_pos_end
-
-	cp	m_y-		m_0
-	cp	m_xL		m_0
 
 	cpta	m_N2		board		calc_pos_end
 
@@ -745,9 +758,9 @@ mov_LU	cpta	m_0		m_xk_mov_LU	num_mov_LU
 
 	cp	m_y	m_0
 
-end	ret	m_retvar
+end	ret     m_retvar
 
-m_retvar	.data	0
+m_retvar    .data   0
 m_y		.data 0
 m_x		.data 0
 m_N2		.data -2
@@ -787,6 +800,7 @@ m_x_array	.data 0
 		.data 0
 
 
+set_to_0	.data -1
 num_cap-	.data 0
 
 
@@ -900,6 +914,7 @@ m_yk_cap_RU	.data 0
 		.data 0
 		.data 0
 
+num1		.data -2
 //----------------------------------------------------------------------------------------------------------------
 num_mov-	.data 0
 
@@ -930,6 +945,7 @@ m_x_mov_L	.data 0		// x value of peices that can move LEFT
 		.data 0
 		.data 0
 
+num2		.data -3
 num_mov_R	.data 0		//have to keep track of # of peices that can move.
 m_y_mov_R	.data 0		//y value of pieces that can move
 		.data 0
@@ -957,6 +973,7 @@ m_x_mov_R	.data 0		// x value of peices that can move
 		.data 0
 		.data 0
 
+num4		.data -4
 num_mov_RU	.data 0
 m_yk_mov_RU	.data 0
 		.data 0
@@ -983,6 +1000,7 @@ m_xk_mov_RU	.data 0
 		.data 0
 		.data 0
 		.data 0
+num5		.data -5
 num_mov_LU	.data 0
 m_yk_mov_LU	.data 0		//was (m_yk_mov_LU)
 		.data 0
@@ -1009,3 +1027,5 @@ m_xk_mov_LU	.data 0		//was (m_xk_mov_LU)
 		.data 0
 		.data 0
 		.data 0
+
+numend		.data -3

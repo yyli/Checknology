@@ -1,5 +1,5 @@
 //initalize the board
-                        cp          turnvar             zero
+                        cp          turnvar             negone
                         cp          ai_on_e             zero
                         cp          ai_on_m             zero      
 //draw background
@@ -29,7 +29,7 @@ bg_draw_loop            cp          vga_x1              w_i                     
 draw_first_opt          call        draw_pvp            draw_ai_retvar                              //clear option selector
 draw_init_piece_i       cp          i                   zero                                        //resets i
                         cp          jumps_again         zero                                        //resets jumps again
-                        cp          turnvar             zero                                        //resets turn
+                        cp          turnvar             negone                                      //resets turn
                         call        turn_draw_c         retvar                                      //clear the turn indicator     
                         call        chk_win_clear       chk_win_retvar                              //clears the winning area        
 draw_init_piece         cpfa        location_x          board_pos_x     i
@@ -54,14 +54,6 @@ draw_init_piece         cpfa        location_x          board_pos_x     i
 draw_init_inc           add         i                   i               one
                         blt         draw_init_piece     i               thirtytwo
 //end draw initial original board
-//draw initial turn
-                        cp          vga_x1              turn_r_x1
-                        cp          vga_x2              turn_r_x2
-                        cp          vga_y1              turn_r_y1
-                        cp          vga_y2              turn_r_y2
-                        cp          vga_color_out       three
-                        call        vga_write_blk       vga_return
-//end draw initial turn
 
 //start save xold
 init_grab_loop          cp          width               cur_l                                       //change temp width to cursor length
