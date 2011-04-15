@@ -2,6 +2,8 @@
                         cp          turnvar             negone
                         cp          ai_on_e             zero
                         cp          ai_on_m             zero      
+			cp	    w_i			zero
+			cp	    h_i			zero
 //draw background
                         cp          vga_x1              zero                                        //copies zero into x1
                         cp          vga_y1              zero                                        //copies zero into y1
@@ -24,7 +26,11 @@ bg_draw_loop            cp          vga_x1              w_i                     
                         add         w_i                 w_i             one                         //add one to w_i
                         call        bg_draw_loop        dump                                        //repaint_loop bg_draw_loop
 //end draw background
-
+//seed the rand gen
+		 	call        mouse_loop          mouse_holder
+                        cp          m_w              	mouse_deltax
+                        cp          m_z              	mouse_deltay   
+//end seed the rand gen
 //draw initial original board
 draw_first_opt          call        draw_pvp            draw_ai_retvar                              //clear option selector
 draw_init_piece_i       cp          i                   zero                                        //resets i
@@ -76,7 +82,6 @@ init_grab_in_loop       add         pos_w_i             w_i             x       
                         add         w_i                 w_i             one                         //add one
                         call        init_grab_in_loop   dump  
 //end save xold
-
 //////start looping here
 
 main_loop               call        chk_win             chk_win_retvar
