@@ -41,28 +41,6 @@ draw_init_piece_i       cp          i                   zero                    
 draw_init_piece         cpfa        location_x          board_pos_x     i
                         cpfa        location_y          board_pos_y     i
                         cpfa        piece               board_orig      i
-                        cpfa        piece_old           board           i
-                        cp          servo_rot           zero                                        //resets serv_rot
-                        be          servo_ri            piece_old       negone
-                        be          servo_rki           piece_old       negtwo
-                        be          servo_bi            piece_old       one
-                        be          servo_bki           piece_old       two
-                        be          servo_blanki        piece_old       zero
-servo_ri                be          servo_endi          piece           negone
-                        add         servo_rot           servo_rot       one
-servo_rki               be          servo_endi          piece           negtwo
-                        add         servo_rot           servo_rot       one
-servo_bi                be          servo_endi          piece           one
-                        add         servo_rot           servo_rot       one
-servo_bki               be          servo_endi          piece           two
-                        add         servo_rot           servo_rot       one
-servo_blanki            be          servo_endi          piece           zero   
-                        add         servo_rot           servo_rot       one
-                        be          servo_ri            zero            zero
-servo_endi              cpta        piece               board_old       i
-			cp	    servo_port		i
-			cp	    servo_turns		servo_rot
-			call	    servo		servo_retvar
                         sub         dump                location_x      one
                         mult        vga_x1              dump            width_square
                         mult        vga_x2              location_x      width_square
@@ -418,29 +396,7 @@ pre_draw_piece          be          pre_draw_jumps      jumps_again     one
 pre_draw_jumps          cp          i                   zero                                        //resets i   
 draw_piece              cpfa        location_x          board_pos_x     i
                         cpfa        location_y          board_pos_y     i
-                        cpfa        piece_old           board_old       i
                         cpfa        piece               board           i
-                        cp          servo_rot           zero                                        //resets serv_rot
-                        be          servo_r             piece_old       negone
-                        be          servo_rk            piece_old       negtwo
-                        be          servo_b             piece_old       one
-                        be          servo_bk            piece_old       two
-                        be          servo_blank         piece_old       zero
-servo_r                 be          servo_end           piece           negone
-                        add         servo_rot           servo_rot       one
-servo_rk                be          servo_end           piece           negtwo
-                        add         servo_rot           servo_rot       one
-servo_b                 be          servo_end           piece           one
-                        add         servo_rot           servo_rot       one
-servo_bk                be          servo_end           piece           two
-                        add         servo_rot           servo_rot       one
-servo_blank             be          servo_end           piece           zero   
-                        add         servo_rot           servo_rot       one         
-                        be          servo_r             zero            zero
-servo_end               cpta        piece               board_old       i
-                        cp          servo_turns         servo_rot
-			cp	    servo_port		i
-                        call        servo               servo_retvar
                         sub         dump                location_x      one
                         mult        vga_x1              dump            width_square
                         mult        vga_x2              location_x      width_square
@@ -854,38 +810,6 @@ board_orig              .data       -1
                         .data       1
                         .data       1
                         .data       1
-board_old               .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       -1
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       0
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
-                        .data       1
 board_pos_x             .data       2
                         .data       4
                         .data       6
@@ -989,7 +913,6 @@ board                   .data       -1
                         .data       1
                         .data       1
 test1                   .data       0
-servo_rot               .data       0
 #include vga.e
 #include mouse.e
 #include chkvalidsq.e
@@ -1003,4 +926,3 @@ servo_rot               .data       0
 #include AI_M.e
 #include chk_vld_mv.e
 #include chk_jumps.e
-#include servo.e
